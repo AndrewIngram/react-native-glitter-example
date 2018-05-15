@@ -20,12 +20,15 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "d3-delaunay": "^2.0.1",
     "d3-voronoi": "^1.1.2",
+    "delaunator": "^2.0.0",
     "expo": "^27.0.1",
     "expo-three": "^2.2.2-alpha.1",
     "lodash": "^4.17.10",
     "react": "16.3.1",
     "react-native": "~0.55.2",
-    "three": "^0.92.0"
+    "three": "^0.92.0",
+    "voronator": "^1.1.0"
   }
 }

@@ -1,67 +1,33 @@
-import { Accelerometer, Font, GLView } from 'expo';
-import ExpoTHREE, { THREE } from 'expo-three';
-import React, { Fragment, PureComponent } from 'react';
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
-import polygons from './src/polygons';
+import { Accelerometer, Font, GLView } from "expo";
+import ExpoTHREE, { THREE } from "expo-three";
+import React, { Fragment, PureComponent } from "react";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 
 THREE.suppressExpoWarnings(true);
 
-const material = new THREE.MeshPhysicalMaterial({
-  color: 0x371159,
-  metalness: 1,
-});
-
-function meshForPolygon(polygon, index) {
-  const [first, ...remainder] = polygon;
-
-  const shape = new THREE.Shape();
-
-  shape.moveTo(first[0], first[1]);
-
-  remainder.forEach(([x, y]) => {
-    shape.lineTo(x, y);
-  });
-
-  shape.lineTo(first[0], first[1]);
-
-  const geometry = new THREE.ShapeGeometry(shape);
-
-  const normal =  new THREE.Vector3(0.5 - Math.random(), 0.5 - Math.random(), 1);
-
-  geometry.faces.forEach(face => {
-    face.vertexNormals = [normal, normal, normal];
-  });
-  geometry.elementsNeedUpdate = true;
-
-  return new THREE.Mesh(geometry, material);
-}
-
-const mergedGeometry = polygons.map(meshForPolygon).reduce((acc, mesh) => {
-  mesh.updateMatrix();
-  acc.merge(mesh.geometry, mesh.matrix);
-  return acc;
-}, new THREE.Geometry());
-
-const mesh = new THREE.Mesh(mergedGeometry, material);
+import getSquareGeometry from "./src/getSquareGeometry";
 
 export default class App extends PureComponent {
   state = {
     loaded: false
-  }
+  };
 
   _accelerometerData = {
     x: 0,
     y: 0,
-    z: 0,
+    z: 0
   };
 
   async componentDidMount() {
-    await Font.loadAsync({
-      'pacifico': require('./assets/Pacifico-Regular.ttf'),
-    });
+    this._normalMap = await ExpoTHREE.loadAsync(
+      require("./assets/normalMap.png")
+    );
+    // await Font.loadAsync({
+    //   pacifico: require("./assets/Pacifico-Regular.ttf")
+    // });
     this.setState({
       loaded: true
-    })
+    });
     this._subscribe();
   }
 
@@ -75,7 +41,7 @@ export default class App extends PureComponent {
       this._accelerometerData = {
         x: accelerometerData.x,
         y: accelerometerData.y,
-        z: accelerometerData.z,
+        z: accelerometerData.z
       };
     });
   };
@@ -86,8 +52,8 @@ export default class App extends PureComponent {
   };
 
   _onGLContextCreate = gl => {
-    const near_plane = 2;
-    const far_plane = 600;
+    const near_plane = 1;
+    const far_plane = 900;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -100,20 +66,38 @@ export default class App extends PureComponent {
     const renderer = ExpoTHREE.createRenderer({ gl });
     renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
 
+    const geometry = getSquareGeometry();
+    geometry.center();
+
+    const material = new THREE.MeshPhysicalMaterial({
+      color: 0x371159,
+      metalness: 1,
+      // map: this._normalMap,
+      normalMap: this._normalMap
+    });
+
+    const mesh = new THREE.Mesh(geometry, material);
+    // mesh.center();
+    mesh.scale.set(256, 256, 1);
+
     scene.add(mesh);
 
-    camera.position.set(0, 0, far_plane );
+    const dist = 256 / (2 * Math.tan(camera.fov * Math.PI / 360));
+
+    camera.position.set(0, 0, 256 / 2 + dist);
+
+    // camera.position.set(0, 0, far_plane);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     const light = new THREE.SpotLight(0xffffff);
-    light.position.set(0, 0, 2 * far_plane);
-    light.intensity = 0.6;
+    light.position.set(-2048, -2048, 256 + dist);
+    light.intensity = 0.9;
     scene.add(light);
 
     const renderLoop = () => {
       requestAnimationFrame(renderLoop);
-      light.position.x = 1000 * this._accelerometerData.x;
-      light.position.y = 1000 * this._accelerometerData.y;
+      light.position.x = 512 * this._accelerometerData.x;
+      light.position.y = 512 * this._accelerometerData.y;
 
       renderer.render(scene, camera);
       gl.endFrameEXP();
@@ -126,16 +110,22 @@ export default class App extends PureComponent {
       <Fragment>
         <StatusBar barStyle="light-content" />
         <View style={styles.container}>
-          <GLView
-            style={{ flex: 1 }}
-            onContextCreate={this._onGLContextCreate}
-          />
+          {this.state.loaded && (
+            <GLView
+              style={{ flex: 1 }}
+              onContextCreate={this._onGLContextCreate}
+            />
+          )}
         </View>
-        {this.state.loaded && <View style={[StyleSheet.absoluteFill, styles.textContainer]}>
-        <Text style={{ fontFamily: 'pacifico', fontSize: 36, color: 'yellow' }}>
-  Glittery
-</Text>
-        </View>}
+        {/* {this.state.loaded && (
+          <View style={[StyleSheet.absoluteFill, styles.textContainer]}>
+            <Text
+              style={{ fontFamily: "pacifico", fontSize: 36, color: "yellow" }}
+            >
+              Glittery
+            </Text>
+          </View>
+        )} */}
       </Fragment>
     );
   }
@@ -144,10 +134,10 @@ export default class App extends PureComponent {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rebeccapurple',
+    backgroundColor: "rebeccapurple"
   },
   textContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center"
   }
 });

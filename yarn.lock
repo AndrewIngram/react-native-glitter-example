@@ -2183,6 +2183,10 @@ cssom@0.3.x, "cssom@>= 0.3.2 < 0.4.0":
   dependencies:
     cssom "0.3.x"
 
+d3-delaunay@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/d3-delaunay/-/d3-delaunay-2.0.1.tgz#7505224537efca55f6f22dab2d7ac283e633a860"
+
 d3-voronoi@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/d3-voronoi/-/d3-voronoi-1.1.2.tgz#1687667e8f13a2d158c80c1480c5a29cb0d8973c"
@@ -2290,6 +2294,10 @@ degenerator@^1.0.4:
     ast-types "0.x.x"
     escodegen "1.x.x"
     esprima "3.x.x"
+
+delaunator@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/delaunator/-/delaunator-2.0.0.tgz#948dfc2c5fc7bb8abf470f2296ef8335a1773cae"
 
 delay-async@^1.0.0:
   version "1.1.0"
@@ -6866,6 +6874,10 @@ verror@1.10.0:
 very-fast-args@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/very-fast-args/-/very-fast-args-1.1.0.tgz#e16d1d1faf8a6e596a246421fd90a77963d0b396"
+
+voronator@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/voronator/-/voronator-1.1.0.tgz#bb279fa5163ab3846ea9846f18ca54309f00af4d"
 
 w3c-hr-time@^1.0.1:
   version "1.0.1"
